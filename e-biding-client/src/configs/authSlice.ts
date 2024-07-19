@@ -6,6 +6,7 @@ import { IAdmin } from "../interfaces/admin.interface";
 export interface IInitialState {
   isAuthenticated: boolean;
   admin: IAdmin | null;
+  isAccountVerified: boolean;
 }
 
 // const token = Cookies.get("token"); // Adjust the key name as needed
@@ -14,6 +15,7 @@ const initialState: IInitialState = {
   //   isAuthenticated: token ? true : false,
   isAuthenticated: true,
   admin: user ? JSON.parse(user!) : null,
+  isAccountVerified: true
 };
 
 export const userSlice = createSlice({

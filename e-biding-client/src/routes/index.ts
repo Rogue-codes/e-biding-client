@@ -5,16 +5,12 @@ const routes = [
   {
     path: paths.HOME,
     exact: true,
-    component: lazy(
-      () => import("../views/home/Home")
-    ),
+    component: lazy(() => import("../views/home/Home")),
   },
   {
     path: paths.MARKETPLACE,
     exact: true,
-    component: lazy(
-      () => import("../views/marketplace/MarketPlace")
-    ),
+    component: lazy(() => import("../views/marketplace/MarketPlace")),
   },
   {
     path: paths.BIDHISTORY,
@@ -25,7 +21,12 @@ const routes = [
     path: paths.PROFILE,
     exact: true,
     component: lazy(() => import("../views/profile/Profile")),
-  }
+  },
+  {
+    path: paths.SINGLEBID,
+    exact: true,
+    component: lazy(() => import("../views/marketplace/SIngleBid")),
+  },
 ];
 
 export default routes;
