@@ -9,7 +9,7 @@ export default function Layout({ children }: ILayout) {
   return (
     <div>
       <Nav />
-      <div className="e_biding_container h-screen overflow-y-scroll py-32">
+      <div className="e_biding_container min-h-screen py-32">
         {children}
       </div>
       <Footer />

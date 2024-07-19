@@ -1,3 +1,5 @@
-import logo from './logo.svg'
+import logo from "./logo.svg";
+import table from "./table.svg";
+import laptop from "./laptop.svg";
 
-export {logo}
+export { logo, laptop, table };
