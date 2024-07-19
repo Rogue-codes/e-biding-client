@@ -3,4 +3,5 @@ export const paths = {
   HOME: "/home",
   MARKETPLACE: "/market-place",
   BIDHISTORY: "/bids/history",
+  PROFILE: "/profile",
 };

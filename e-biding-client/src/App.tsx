@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from "react-router-dom";
+import AppWrapper from "./layout/AppWrapper";
+import AppOutlet from "./layout/AppOutlet";
+import { paths } from "./routes/paths";
+import routes from "./routes";
+import { Suspense } from "react";
+import Footer from "./components/footer/Footer";
+import Preloader from "./components/preloader/Preloader";
+import PublicOutlet from "./layout/guard/publicRoute/PublicOutlet";
+import Auth from "./views/auth/Auth";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <AppWrapper>
+      <Routes>
+        <Route element={<AppOutlet />}>
+          <Route index element={<Navigate to={paths.HOME} />} />
+          {routes.map(({ component: Component, path }) => (
+            <Route
+              path={path}
+              key={path}
+              element={
+                <Suspense fallback={<Preloader />}>
+                  <Component />
+                </Suspense>
+              }
+            />
+          ))}
+        </Route>
 
-export default App
+        <Route element={<PublicOutlet />}>
+          <Route index element={<Navigate to={paths.LOGIN} />} />
+          <Route
+            path={paths.LOGIN}
+            element={
+              <Suspense fallback={<Preloader />}>
+                <Auth />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        {/* <Route index element={<NoMatch />} /> */}
+      </Routes>
+      <Footer/>
+    </AppWrapper>
+  );
+}

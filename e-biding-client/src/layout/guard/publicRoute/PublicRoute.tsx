@@ -16,7 +16,7 @@ const PublicRoute = ({ children }: IPublicRouteProps) => {
     return children;
   }
 
-  return <Navigate to={paths.ACCOUNTMANAGEMENT} state={{ expired: true }} />;
+  return <Navigate to={paths.LOGIN} state={{ expired: true }} />;
 };
 
 export default PublicRoute;

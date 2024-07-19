@@ -6,31 +6,26 @@ const routes = [
     path: paths.HOME,
     exact: true,
     component: lazy(
-      () => import("../views/accountManagement/AccountManagement")
+      () => import("../views/home/Home")
     ),
   },
   {
     path: paths.MARKETPLACE,
     exact: true,
     component: lazy(
-      () => import("../views/biddingManagement/BiddingManagement")
+      () => import("../views/marketplace/MarketPlace")
     ),
   },
   {
-    path: paths.ANALYTICS,
+    path: paths.BIDHISTORY,
     exact: true,
-    component: lazy(() => import("../views/analytics/Analytics")),
+    component: lazy(() => import("../views/bidhistory/BidHistory")),
   },
   {
-    path: paths.CREATE_BID,
+    path: paths.PROFILE,
     exact: true,
-    component: lazy(() => import("../views/biddingManagement/CreateBid")),
-  },
-  {
-    path: paths.VIEW_BID,
-    exact: true,
-    component: lazy(() => import("../views/biddingManagement/ViewBid")),
-  },
+    component: lazy(() => import("../views/profile/Profile")),
+  }
 ];
 
 export default routes;
