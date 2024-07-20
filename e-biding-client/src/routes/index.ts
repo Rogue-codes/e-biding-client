@@ -32,6 +32,11 @@ const routes = [
     exact: true,
     component: lazy(() => import("../views/bidhistory/SingleBidHistory")),
   },
+  {
+    path: paths.PROFILE,
+    exact: true,
+    component: lazy(() => import("../views/profile/Profile")),
+  },
 ];
 
 export default routes;
