@@ -27,6 +27,11 @@ const routes = [
     exact: true,
     component: lazy(() => import("../views/marketplace/SIngleBid")),
   },
+  {
+    path: paths.SINGLEBIDHISTORY,
+    exact: true,
+    component: lazy(() => import("../views/bidhistory/SingleBidHistory")),
+  },
 ];
 
 export default routes;

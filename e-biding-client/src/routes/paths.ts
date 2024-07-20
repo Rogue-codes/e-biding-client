@@ -5,4 +5,5 @@ export const paths = {
   BIDHISTORY: "/bids/history",
   PROFILE: "/profile",
   SINGLEBID: "/market-place/bid",
+  SINGLEBIDHISTORY: "/bid-history/bid",
 };

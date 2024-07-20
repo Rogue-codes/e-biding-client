@@ -1,5 +1,4 @@
 import { Button, Divider } from "@mui/material";
-import { pendingBidArr } from "../../constants";
 import Bid from "../../components/bid/Bid";
 
 interface IBidWrapper {

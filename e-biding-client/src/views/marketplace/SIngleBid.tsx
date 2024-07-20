@@ -1,7 +1,21 @@
 import { Divider, Tag } from "antd";
 import { macbook } from "../../assets";
+import InfoIcon from "@mui/icons-material/Info";
+import { Button, FormControl, TextField } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
 
+interface IForm {
+  bidAmount: number;
+}
 export default function SIngleBid() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<IForm>();
+  const onSubmit = (data: IForm) => {
+    console.log("data", data);
+  };
   return (
     <div>
       <div className="w-full flex mb-3 justify-between items-center">
@@ -63,8 +77,108 @@ export default function SIngleBid() {
       </div>
       <Divider />
 
-      <div className="">
+      <div className="w-[57vw] flex justify-end">
+        <div className="w-[65%]">
+          <p className="text-md leading-6 text-EBD/Darkest ">
+            Bid Requirements
+          </p>
+          <p className="text-xs mt-2 flex justify-start gap-1 items-center font-medium text-EBD/Medium leading-4">
+            <InfoIcon
+              sx={{
+                fontSize: "16px",
+              }}
+            />
+            Kindly check the product specifications that apply to the product
+            you have for this bid.
+          </p>
 
+          <div className="w-[100%] mt-4">
+            {[1, 2, 3, 4, 5].map((_term, i) => (
+              <div
+                key={i}
+                className="flex justify-start gap-4 my-2 items-center w-full"
+              >
+                <div className="w-3 h-3 border border-[#142633]"></div>
+                <p className="text-sm text-[#142633]">
+                  Vendor must check this requirement for this Bid upon
+                  availability
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <p className="text-xl font-semibold leading-8 py-4">
+              My Bid Description
+            </p>
+          </div>
+
+          <form action="" onSubmit={handleSubmit(onSubmit)}>
+            <FormControl
+              sx={{
+                width: "34vw",
+              }}
+            >
+              <label
+                htmlFor=""
+                className="text-md font-medium leading-6 text-EBD/Darkest"
+              >
+                Bid Amount
+              </label>
+              <Controller
+                name="bidAmount"
+                control={control}
+                rules={{
+                  required: "Bid amount is required",
+                  pattern: {
+                    value: /^\d+$/,
+                    message: "text/character not supported",
+                  },
+                }}
+                render={({
+                  field: { ref, ...fields },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    {...fields}
+                    variant="outlined"
+                    placeholder="Bid Amount"
+                    inputProps={{ "data-testid": "firstname" }}
+                    fullWidth
+                    inputRef={ref}
+                    InputProps={{
+                      color: fields.value && !error ? "success" : undefined,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={Boolean(error?.message)}
+                  />
+                )}
+              />
+
+              <Button
+                sx={{
+                  height: "48px",
+                  width: "34vw",
+                  borderRadius: "5px",
+                  mt: "32px",
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  background: "#3E4095",
+                  color: "#ffffff",
+                  "&:hover": {
+                    background: "#3E4095",
+                  },
+                }}
+                disabled={!isValid}
+                className="disabled:!text-white disabled:opacity-50 disabled:!cursor-not-allowed"
+              >
+                Submit Bid
+              </Button>
+            </FormControl>
+          </form>
+        </div>
       </div>
     </div>
   );
