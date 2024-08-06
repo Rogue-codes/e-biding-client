@@ -13,7 +13,6 @@ const AuthGaurd = ({ children }: IAuthGaurdProps) => {
     (state: any) => state?.auth?.isAuthenticated
   );
   if (isAuthenticated) {
-    console.log("isAuthenticated", isAuthenticated);
     return children;
   }
 

@@ -7,6 +7,8 @@ import React, { MouseEvent, useState } from "react";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { paths } from "../../routes/paths";
+import { IUser } from "../../interfaces/user.interface";
+import { useSelector } from "react-redux";
 export default function Nav() {
   const location = useLocation();
 
@@ -19,12 +21,14 @@ export default function Nav() {
     setAnchorEl(null);
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const navigateToProfile = () => {
-    navigate(paths.PROFILE)
+    navigate(paths.PROFILE);
     handleClose();
-  }
+  };
+
+  const user: IUser = useSelector((state: any) => state.auth.user);
 
   return (
     <nav className="w-full border shadow fixed top-0 left-0 z-[900] bg-white py-5">
@@ -77,7 +81,9 @@ export default function Nav() {
           className=" rounded-lg h-10 border border-b-EBD/Light flex justify-between items-center px-2"
         >
           <div className="w-6 h-6 rounded-full border border-black"></div>
-          <p className="text-md text-EBD/Dark font-medium">Wale Adigun</p>
+          <p className="text-md text-EBD/Dark font-medium">
+            {user.firstName} {user.lastName}
+          </p>
           <ExpandMoreIcon />
         </Button>
       </div>

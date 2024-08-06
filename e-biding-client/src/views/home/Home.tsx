@@ -5,11 +5,12 @@ import { interestingBidArr, pendingBidArr } from "../../constants";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import InfoIcon from "@mui/icons-material/Info";
+import { IUser } from "../../interfaces/user.interface";
 export default function Home() {
   const [bidCount, _setBidCount] = useState(0);
 
-  const accountVerified = useSelector(
-    (state: any) => state.auth.isAccountVerified
+  const user:IUser = useSelector(
+    (state: any) => state.auth.user
   );
   return (
     <Fragment>
@@ -35,16 +36,17 @@ export default function Home() {
         </Button>
       </div>
 
-      {!accountVerified && (
-        <div className="p-2 text-sm mt-2 rounded-lg flex justify-start items-center gap-2 bg-[#B94B72] text-white">
-          <InfoIcon />
-          <p>
-            Kindly wait for your account to be verified so you can start
-            bidding! The process might take up to 24 hrs and if it takes longer,
-            contact our customer support lines. Thank you!
-          </p>
-        </div>
-      )}
+      {!user.isActive ||
+        (!user.isVerified && (
+          <div className="p-2 text-sm mt-2 rounded-lg flex justify-start items-center gap-2 bg-[#B94B72] text-white">
+            <InfoIcon />
+            <p>
+              Kindly wait for your account to be verified so you can start
+              bidding! The process might take up to 24 hrs and if it takes
+              longer, contact our customer support lines. Thank you!
+            </p>
+          </div>
+        ))}
 
       <PendingBids
         headerText="Pending Bids (2)"
@@ -58,9 +60,10 @@ export default function Home() {
         showBtn
       />
 
-      {!accountVerified && (
-        <div className="w-full h-screen fixed left-0 top-0 bg-EBD/Lightest opacity-40 cursor-not-allowed"></div>
-      )}
+      {!user.isActive ||
+        (!user.isVerified && (
+          <div className="w-full h-screen fixed left-0 top-0 bg-EBD/Lightest opacity-40 cursor-not-allowed"></div>
+        ))}
     </Fragment>
   );
 }

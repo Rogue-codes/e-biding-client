@@ -1,5 +1,7 @@
 import { Button, Divider } from "@mui/material";
 import Bid from "../../components/bid/Bid";
+import { useNavigate } from "react-router-dom";
+import { paths } from "../../routes/paths";
 
 interface IBidWrapper {
   headerText: string;
@@ -17,13 +19,16 @@ export default function BidWrapper({
   showBtn,
   bidCount,
 }: IBidWrapper) {
+  const navigate = useNavigate();
 
-  console.log('bidcount', bidCount);
+  console.log("bidcount", bidCount);
   return (
     <div className="w-full mt-12">
       {!showBtn && !bidCount ? (
         <div className="p-5 flex flex-col justify-center items-center gap-6 w-full">
-          <p className="text-md text-EBD/Darkest leading-7">You currently have no pending bid!</p>
+          <p className="text-md text-EBD/Darkest leading-7">
+            You currently have no pending bid!
+          </p>
           <Button
             variant="contained"
             sx={{
@@ -32,6 +37,7 @@ export default function BidWrapper({
                 backgroundColor: "#3E4095",
               },
             }}
+            onClick={() => navigate(`${paths.MARKETPLACE}`)}
           >
             Browse Marketplace
           </Button>

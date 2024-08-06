@@ -157,7 +157,9 @@ export default function SIngleBid() {
                 )}
               />
 
-              <Button
+              
+            </FormControl>
+            <Button
                 sx={{
                   height: "48px",
                   width: "34vw",
@@ -176,7 +178,6 @@ export default function SIngleBid() {
               >
                 Submit Bid
               </Button>
-            </FormControl>
           </form>
         </div>
       </div>
