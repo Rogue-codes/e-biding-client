@@ -3,12 +3,13 @@ import { logo } from "../../assets";
 import { Links } from "../../constants";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Button, Menu, MenuItem } from "@mui/material";
-import React, { MouseEvent, useState } from "react";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { paths } from "../../routes/paths";
 import { IUser } from "../../interfaces/user.interface";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../../configs/authSlice";
+import React from "react";
 export default function Nav() {
   const location = useLocation();
 
@@ -28,6 +29,14 @@ export default function Nav() {
     handleClose();
   };
 
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate(paths.LOGIN);
+    handleClose();
+  };
+
   const user: IUser = useSelector((state: any) => state.auth.user);
 
   return (
@@ -39,7 +48,10 @@ export default function Nav() {
 
         <div className="flex justify-between gap-8 items-center ">
           {Links.map((link) => (
-            <Link to={link.link} key={link.link}>
+            <Link
+              to={!user?.isActive || !user?.isVerified ? "/" : link.link}
+              key={link.link}
+            >
               <div
                 className={`${
                   location.pathname === link.link &&
@@ -122,7 +134,7 @@ export default function Nav() {
             gap: "12px",
             alignItems: "center",
           }}
-          onClick={handleClose}
+          onClick={handleLogout}
         >
           <LogoutOutlinedIcon
             sx={{

@@ -1,17 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ILoginForm, ILoginResponse } from "../interfaces/user.interface";
+import {
+  ILoginForm,
+  ILoginResponse,
+  IUser,
+  IUserResponse,
+} from "../interfaces/user.interface";
+import Cookies from "js-cookie";
+import { IForm } from "../views/profile/Profile";
 
 const BASE_URL = import.meta.env.VITE_APP_API_URL + "";
+
+const token = Cookies.get("client-token");
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
+    prepareHeaders: (headers) => {
+      const token = Cookies.get("client-token");
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   tagTypes: ["auth"],
   endpoints: (builder) => ({
-    register: builder.mutation<any, { payload: ILoginForm }>({
+    register: builder.mutation<any, { payload: any }>({
       query: (payload) => {
         return {
           url: `/user/register`,
@@ -76,6 +92,45 @@ export const authApi = createApi({
         };
       },
     }),
+
+    updateUser: builder.mutation<IUserResponse, {payload:any,id:any}>({
+      query: ({ payload, id }) => {
+        return {
+          url: `/user/update/${id}`,
+          method: "PUT",
+          body: payload,
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+          },
+        };
+      },
+    }),
+
+    getStatus: builder.query<any, { email: string }>({
+      query: ({ email }) => {
+        return {
+          url: `/user/status/${email}`,
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            Authorization: "Bearer " + token,
+          },
+        };
+      },
+    }),
+
+    getUser: builder.query<IUserResponse, { id: any }>({
+      query: ({ id }) => {
+        return {
+          url: `/user/me/${id}`,
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            Authorization: "Bearer " + token,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -84,4 +139,7 @@ export const {
   useVerifyOTPMutation,
   useResendOTPMutation,
   useLoginMutation,
+  useGetStatusQuery,
+  useGetUserQuery,
+  useUpdateUserMutation,
 } = authApi;

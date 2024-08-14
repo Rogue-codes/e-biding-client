@@ -38,3 +38,10 @@ export interface ILoginResponse {
     access_token: string;
   };
 }
+
+export interface IUserResponse {
+  success: boolean;
+  message: string;
+  data: IUser
+}
+

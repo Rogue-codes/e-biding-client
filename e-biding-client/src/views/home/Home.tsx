@@ -1,17 +1,47 @@
 import { Button } from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
 import PendingBids from "./BidWrapper";
-import { interestingBidArr, pendingBidArr } from "../../constants";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import InfoIcon from "@mui/icons-material/Info";
 import { IUser } from "../../interfaces/user.interface";
-export default function Home() {
-  const [bidCount, _setBidCount] = useState(0);
+import { updateUser } from "../../configs/authSlice";
+import { useGetStatusQuery } from "../../api/auth.api";
+import {
+  useGetPendingBidsQuery,
+  useGetRecomendedBidsQuery,
+} from "../../api/auction.api";
+import { useNavigate } from "react-router-dom";
+import { paths } from "../../routes/paths";
 
-  const user:IUser = useSelector(
-    (state: any) => state.auth.user
-  );
+export default function Home() {
+  const user: IUser = useSelector((state: any) => state.auth.user);
+  const { data: pendingBids, isLoading } = useGetPendingBidsQuery({
+    id: user.id,
+  });
+
+  const { data: recommendedBids, isLoading: isLoadingRecommendedBids } =
+    useGetRecomendedBidsQuery({
+      id: user.id,
+    });
+
+  console.log("recommendedBids: ", recommendedBids?.bids);
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const { data, isSuccess } = useGetStatusQuery({
+    email: user.email,
+  });
+
+  console.log("res", data?.data);
+
+  useEffect(() => {
+    if (isSuccess && data?.data) {
+      dispatch(updateUser({ isActive: data.data }));
+    }
+  }, [isSuccess, data, dispatch]);
+
   return (
     <Fragment>
       <div className="w-full bg-EBD/Lightest p-5 flex justify-between items-center">
@@ -31,39 +61,41 @@ export default function Home() {
               backgroundColor: "#3E4095",
             },
           }}
+          onClick={() => navigate(`${paths.MARKETPLACE}`)}
         >
           Place A bid
         </Button>
       </div>
 
-      {!user.isActive ||
-        (!user.isVerified && (
-          <div className="p-2 text-sm mt-2 rounded-lg flex justify-start items-center gap-2 bg-[#B94B72] text-white">
-            <InfoIcon />
-            <p>
-              Kindly wait for your account to be verified so you can start
-              bidding! The process might take up to 24 hrs and if it takes
-              longer, contact our customer support lines. Thank you!
-            </p>
-          </div>
-        ))}
+      {(!user?.isActive || !user?.isVerified) && (
+        <div className="p-2 text-sm mt-2 rounded-lg flex justify-start items-center gap-2 bg-[#B94B72] text-white">
+          <InfoIcon />
+          <p>
+            Kindly wait for your account to be verified so you can start
+            bidding! The process might take up to 24 hrs and if it takes longer,
+            contact our customer support lines. Thank you!
+          </p>
+        </div>
+      )}
 
       <PendingBids
-        headerText="Pending Bids (2)"
-        bidsArr={pendingBidArr}
+        headerText={`Pending Bids (${pendingBids?.bid?.length})`}
+        bidsArr={pendingBids?.bid}
         showBtn={false}
-        bidCount={bidCount}
+        bidCount={pendingBids?.bid?.length}
+        isLoading={isLoading}
       />
       <PendingBids
         headerText="Bids that might interest you"
-        bidsArr={interestingBidArr}
+        recommendations={recommendedBids?.bids}
         showBtn
+        recommended={true}
+        isLoading={isLoadingRecommendedBids}
       />
 
-      {!user.isActive ||
-        (!user.isVerified && (
-          <div className="w-full h-screen fixed left-0 top-0 bg-EBD/Lightest opacity-40 cursor-not-allowed"></div>
-        ))}
+      {(!user?.isActive || !user?.isVerified) && (
+        <div className="w-full h-screen fixed left-0 top-0 bg-EBD/Lightest opacity-40 cursor-not-allowed"></div>
+      )}
     </Fragment>
   );
 }

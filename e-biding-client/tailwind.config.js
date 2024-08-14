@@ -24,6 +24,7 @@ export default {
         "EBD/Dark": "#505173",
         "EBD/Medium": "#8787A8",
         "EBD/Success": "#269B47",
+        "EBD/Error": "#B94B72",
       },
     },
   },

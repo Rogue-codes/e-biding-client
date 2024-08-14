@@ -7,7 +7,7 @@ export const Links: {
   link: string;
 }[] = [
   {
-    label: "Home",
+    label: "HOME",
     link: paths.HOME,
   },
   {

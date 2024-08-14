@@ -10,11 +10,11 @@ import {
   TextField,
 } from "@mui/material";
 import { message } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ILoginForm } from "../../../interfaces/user.interface";
 import { enqueueSnackbar } from "notistack";
-import axios from "axios";
+import { useRegisterMutation } from "../../../api/auth.api";
 
 interface IRegister {
   setActiveTab: React.Dispatch<React.SetStateAction<number>>;
@@ -30,6 +30,8 @@ export default function Register({
     formState: { isValid },
     watch,
     setValue,
+    reset,
+    handleSubmit,
   } = useForm<ILoginForm>({
     mode: "onChange",
     defaultValues: {
@@ -50,7 +52,10 @@ export default function Register({
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setisLoading] = useState(false);
+  const [isUploadSuccessful, setIsUploadSuccessful] = useState(false);
+  const [creatingAuction, setCreatingAuction] = useState(false);
+
+  console.log("first", isUploadSuccessful);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -104,6 +109,8 @@ export default function Register({
   const phoneNumber = watch("phone");
   const password = watch("password");
 
+  const formval = watch();
+  console.log("formval", formval);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target?.files?.[0];
     if (file) {
@@ -114,78 +121,103 @@ export default function Register({
         message.error("Please select a valid image file.");
         return;
       }
-
-      setValue("CACDoc", file, {
-        shouldValidate: true,
-      });
+      setValue("CACDoc", file);
     }
   };
 
-  const [errorArr, setErrorArr] = useState<string[] | null>(null);
+  const [
+    register,
+    { data, isSuccess: isUserCreated },
+  ] = useRegisterMutation();
 
-  console.log("error array", errorArr);
+  console.log("data", data);
+
+  useEffect(() => {
+    if (isUserCreated) {
+      enqueueSnackbar(data?.message, {
+        variant: "success",
+        anchorOrigin: { vertical: "top", horizontal: "right" },
+      });
+      sessionStorage.setItem("@EBD_USER", data?.data?.id);
+      setJustRegistered(true);
+      setActiveTab(0);
+    }
+  }, [isUserCreated]);
 
   const formVal = watch();
 
   const formData = new FormData();
 
-  formData.append("CACDoc", formVal.CACDoc);
-  formData.append("companyName", formVal.companyName);
-  formData.append("companyAddress", formVal.companyAddress);
-  formData.append("firstName", formVal.firstName);
-  formData.append("lastName", formVal.lastName);
-  formData.append("phone", formVal.phone);
-  formData.append("alternatePhone", formVal.alternatePhone);
-  formData.append("RCNumber", formVal.RCNumber);
-  formData.append("postalCode", formVal.postalCode.toString());
-  formData.append("email", formVal.email);
-  formData.append("password", formVal.password);
+  const handleImageUpload = async (): Promise<string | null> => {
+    try {
+      formData.append("file", formVal?.CACDoc);
+      formData.append("upload_preset", "E-Biding"); // Correct the preset name
 
-  const handleRegistration = async (e: any) => {
-    e.preventDefault();
-    setisLoading(true);
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/osuji/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-    const baseURL = import.meta.env.VITE_APP_API_URL + "";
+      const imgObj = await res.json();
+      return imgObj.secure_url.toString();
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
+
+  const handleRegistration = async (values: any) => {
+    setCreatingAuction(true);
+    let imageURL;
 
     try {
-      const response = await axios.post(`${baseURL}/user/register`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      imageURL = await handleImageUpload();
+      setValue("CACDoc", imageURL, {
+        shouldValidate: true,
       });
-      setisLoading(false);
-      if (response?.data?.success) {
-        enqueueSnackbar(response?.data?.message, {
-          variant: "success",
-          anchorOrigin: { vertical: "top", horizontal: "right" },
-        });
-        sessionStorage.setItem("@EBD_USER", response?.data?.data?.id);
-        setJustRegistered(true);
-        setActiveTab(0);
-      }
-    } catch (error: any) {
-      setisLoading(false);
-      console.log(error);
-      setErrorArr(error?.response?.data?.message);
-      if (Array.isArray(error?.response?.data?.message)) {
-        errorArr?.forEach((item) => {
-          enqueueSnackbar(item, {
+    } catch (error) {
+      enqueueSnackbar("Image upload failed. Please try again.", {
+        variant: "error",
+        anchorOrigin: { vertical: "top", horizontal: "right" },
+      });
+      return;
+    }
+
+    try {
+      await register({
+        ...values,
+        CACDoc: imageURL,
+      }).unwrap();
+      setCreatingAuction(false);
+      reset();
+    } catch (e: any) {
+      setCreatingAuction(false);
+      console.error(e);
+      if (Array.isArray(e?.data?.message)) {
+        e.data.message.map((message: any) => {
+          enqueueSnackbar(message, {
             variant: "error",
             anchorOrigin: { vertical: "top", horizontal: "right" },
           });
         });
       } else {
-        enqueueSnackbar(error?.response?.data?.message, {
+        enqueueSnackbar(e?.data?.message, {
           variant: "error",
           anchorOrigin: { vertical: "top", horizontal: "right" },
         });
       }
     }
   };
-
   return (
     <div>
-      <form action="" className="mt-16" onSubmit={handleRegistration}>
+      <form
+        action=""
+        className="mt-16"
+        onSubmit={handleSubmit(handleRegistration)}
+      >
         <FormControl
           sx={{
             width: "100%",
@@ -765,9 +797,9 @@ export default function Register({
           type="submit"
           variant="contained"
           className="w-full bg-EBD-Primary disabled:opacity-50"
-          disabled={!isValid || isLoading}
+          disabled={!isValid || creatingAuction}
         >
-          {isLoading ? (
+          {creatingAuction ? (
             <CircularProgress
               sx={{
                 color: "white",

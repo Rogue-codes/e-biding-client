@@ -29,9 +29,28 @@ export const userSlice = createSlice({
       Cookies.set("client-token", action.payload.access_token, { expires: 7 });
       localStorage.setItem("@EBD_CLIENT", JSON.stringify(state.user));
     },
+    logoutUser: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      Cookies.remove("client-token");
+      localStorage.removeItem("@EBD_CLIENT");
+    },
+    updateUser: (state, action: PayloadAction<{ isActive: boolean }>) => {
+      if (state.user) {
+        state.user.isActive = action.payload.isActive;
+
+        // Update local storage
+        localStorage.setItem("@EBD_CLIENT", JSON.stringify(state.user));
+        // Cookies.remove("client-token");
+      }
+    },
+    updateUserProfile: (state, action: PayloadAction<{ data: IUser }>) => {
+      state.user = action.payload.data;
+      localStorage.setItem("@EBD_CLIENT", JSON.stringify(state.user));
+    },
   },
 });
 
-export const { loginUser } = userSlice.actions;
+export const { loginUser, logoutUser, updateUser, updateUserProfile } = userSlice.actions;
 
 export default userSlice.reducer;

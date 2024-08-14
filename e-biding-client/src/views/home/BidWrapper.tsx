@@ -1,16 +1,17 @@
-import { Button, Divider } from "@mui/material";
+import { Button, CircularProgress, Divider } from "@mui/material";
 import Bid from "../../components/bid/Bid";
 import { useNavigate } from "react-router-dom";
 import { paths } from "../../routes/paths";
+import { IAuction, IBid } from "../../interfaces/auction.interface";
 
 interface IBidWrapper {
   headerText: string;
-  bidsArr: {
-    img: string;
-    desc: string;
-  }[];
+  bidsArr?: IBid[];
+  recommendations?: IAuction[];
   showBtn: boolean;
   bidCount?: number;
+  recommended?: boolean;
+  isLoading: boolean;
 }
 
 export default function BidWrapper({
@@ -18,6 +19,9 @@ export default function BidWrapper({
   headerText,
   showBtn,
   bidCount,
+  recommended,
+  recommendations,
+  isLoading,
 }: IBidWrapper) {
   const navigate = useNavigate();
 
@@ -68,9 +72,34 @@ export default function BidWrapper({
 
           <Divider />
           <div className="w-full mt-8 flex flex-wrap justify-start gap-12 items-center">
-            {bidsArr.map((bid, i) => (
-              <Bid description={bid.desc} img={bid.img} key={i} />
-            ))}
+            {isLoading ? (
+              <div className="w-full flex justify-center items-center">
+                <CircularProgress
+                  sx={{
+                    color: "#fff",
+                  }}
+                  size={25}
+                />
+              </div>
+            ) : (
+              <>
+                {!recommended
+                  ? bidsArr?.map((bid, i) => (
+                      <Bid
+                        description={bid?.auction?.bidDescription}
+                        img={bid?.auction?.itemImg}
+                        key={i}
+                      />
+                    ))
+                  : recommendations?.map((auction, i) => (
+                      <Bid
+                        description={auction?.bidDescription}
+                        img={auction?.itemImg}
+                        key={i}
+                      />
+                    ))}
+              </>
+            )}
           </div>
         </div>
       )}
